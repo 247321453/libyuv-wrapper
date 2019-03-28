@@ -11,18 +11,13 @@
 
 static int (*i420Func[])(const uint8_t *,int,uint8_t *,int,uint8_t *,int ,uint8_t *,int,int,int)={
         //4
-        libyuv::ABGRToI420,
-        libyuv::RGBAToI420,
-        libyuv::ARGBToI420,
-        libyuv::BGRAToI420,
+        libyuv::ABGRToI420,libyuv::RGBAToI420,libyuv::ARGBToI420,libyuv::BGRAToI420,
         //3
-        libyuv::RGB24ToI420,
-        //2
-        libyuv::RGB565ToI420
+        libyuv::RGB24ToI420,libyuv::RGB565ToI420
 };
 
 /**
- int RGBA = 0x01001040;
+    int RGBA = 0x01001040;
     int ABGR = 0x01001041;
     int BGRA = 0x01001042;
     int ARGB = 0x01001043;
