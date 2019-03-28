@@ -36,5 +36,6 @@ jint jni_i420_scale(JNIEnv *env, jclass clazz, jbyteArray src_i420_data, jint wi
 jint
 jni_i420_to_nv21(JNIEnv *env, jclass clazz, jbyteArray i420_data, jint width, jint height, jbyteArray nv21_data);
 
-
+jint
+jni_nv21_to_i420(JNIEnv *env, jclass clazz, jbyteArray nv21_data, jint width, jint height, jbyteArray i420_data);
 #endif //LIBYUV_WRAPPER_YUV_H

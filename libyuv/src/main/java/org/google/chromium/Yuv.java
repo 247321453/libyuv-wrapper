@@ -10,19 +10,24 @@ import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 
 public class Yuv {
+    public enum Type {
+        I420,
+        NV21
+    }
+
     private int width;
     private int height;
     private byte[] data;
-    private YuvType type;
+    private Type type;
 
-    public Yuv(int width, int height, YuvType type) {
+    public Yuv(int width, int height, Type type) {
         this.width = width;
         this.height = height;
-        this.data = new byte[width * height * 3 / 2];
+        this.data = newYuvBytes(width, height);
         this.type = type;
     }
 
-    public YuvType getType() {
+    public Yuv.Type getType() {
         return type;
     }
 
@@ -58,7 +63,7 @@ public class Yuv {
         }
         int[] pixels = new int[width * height];
         bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
-        Yuv yuv = new Yuv(width, height, YuvType.I420);
+        Yuv yuv = new Yuv(width, height, Yuv.Type.I420);
         int err = YuvJni.convertToi420I(type, pixels, width, height, yuv.data);
         if (err == 0) {
             return yuv;
@@ -66,18 +71,36 @@ public class Yuv {
         return null;
     }
 
-    public Bitmap toBitmap() {
+    public static byte[] newYuvBytes(int width, int height) {
+        return new byte[width * height * 3 / 2];
+    }
+
+    public void setType(Type type) {
+        if (this.type != type) {
+            if (type == Type.NV21) {
+                byte[] src = newYuvBytes(width, height);
+                YuvJni.i420ToNv21(this.data, width, height, src);
+                this.data = src;
+            } else {
+                byte[] src = newYuvBytes(width, height);
+                YuvJni.nv21ToI420(this.data, width, height, src);
+                this.data = src;
+            }
+        }
+    }
+
+    public Bitmap toBitmap(int q) {
         byte[] src;
-        if (type != YuvType.NV21) {
+        if (type != Yuv.Type.NV21) {
             src = this.data;
         } else {
             //转为nv21
-            src = new byte[width * height * 3 / 2];
+            src = newYuvBytes(width, height);
             YuvJni.i420ToNv21(this.data, width, height, src);
         }
         YuvImage yuvImage = new YuvImage(src, ImageFormat.NV21, width, height, null);
         ByteArrayOutputStream fOut = new ByteArrayOutputStream();
-        yuvImage.compressToJpeg(new Rect(0, 0, width, height), 100, fOut);
+        yuvImage.compressToJpeg(new Rect(0, 0, width, height), q, fOut);
         byte[] bitData = fOut.toByteArray();
         return BitmapFactory.decodeByteArray(bitData, 0, bitData.length);
     }

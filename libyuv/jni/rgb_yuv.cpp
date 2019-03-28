@@ -35,11 +35,11 @@ jint jni_convert_i420(JNIEnv *env, jclass clazz, jint type, jbyteArray rgba, jin
                       jbyteArray yuv) {
     uint8_t convert_type = (uint8_t) (type & 0x0F);
     int rgba_stride = ((type & 0xF0) >> 4) * width;
-    jbyte *src = env->GetByteArrayElements(rgba, JNI_FALSE);
-    jbyte *dst = env->GetByteArrayElements(yuv, JNI_FALSE);
+    jbyte *src = env->GetByteArrayElements(rgba, NULL);
+    jbyte *dst = env->GetByteArrayElements(yuv, NULL);
     int ret = convert_i420(src, rgba_stride, width, height, dst, i420Func[convert_type]);
-    env->ReleaseByteArrayElements(rgba, src, JNI_OK);
-    env->ReleaseByteArrayElements(yuv, dst, JNI_OK);
+    env->ReleaseByteArrayElements(rgba, src, 0);
+    env->ReleaseByteArrayElements(yuv, dst, 0);
     return ret;
 }
 
@@ -77,12 +77,12 @@ jint jni_convert_i420_i(JNIEnv *env, jclass clazz, jint type, jintArray _rgba, j
             src[i * num + 2] = (jbyte) B;
         }
     }
-    env->ReleaseIntArrayElements(_rgba, intArray, JNI_OK);
+    env->ReleaseIntArrayElements(_rgba, intArray, 0);
 
     ///
-    jbyte *dst = env->GetByteArrayElements(yuv, JNI_FALSE);
+    jbyte *dst = env->GetByteArrayElements(yuv, NULL);
     int ret= convert_i420(src, rgba_stride, width, height, dst, i420Func[convert_type]);
 
-    env->ReleaseByteArrayElements(yuv, dst, JNI_OK);
+    env->ReleaseByteArrayElements(yuv, dst, 0);
     return ret;
 }

@@ -25,26 +25,19 @@ int i420_rotate(jbyte *src_i420_data, int width, int height, jbyte *dst_i420_dat
                                  width, height,
                                  (libyuv::RotationMode) degree);
     } else {
-        ret = libyuv::I420Rotate((const uint8_t *) src_i420_y_data, width,
-                                 (const uint8_t *) src_i420_u_data, width >> 1,
-                                 (const uint8_t *) src_i420_v_data, width >> 1,
-                                 (uint8_t *) dst_i420_y_data, width,
-                                 (uint8_t *) dst_i420_u_data, width >> 1,
-                                 (uint8_t *) dst_i420_v_data, width >> 1,
-                                 width, height,
-                                 (libyuv::RotationMode) degree);
+        ret = 0;
     }
     return ret;
 }
 jint jni_i420_rotate(JNIEnv *env, jclass clazz, jbyteArray src_i420_data, jint width, jint height,
                      jbyteArray dst_i420_data, jint degree) {
-    jbyte *src = env->GetByteArrayElements(src_i420_data, JNI_FALSE);
-    jbyte *dst = env->GetByteArrayElements(dst_i420_data, JNI_FALSE);
+    jbyte *src = env->GetByteArrayElements(src_i420_data, NULL);
+    jbyte *dst = env->GetByteArrayElements(dst_i420_data, NULL);
 
     int ret = i420_rotate(src, width, height, dst, degree);
 
-    env->ReleaseByteArrayElements(src_i420_data, src, JNI_OK);
-    env->ReleaseByteArrayElements(dst_i420_data, dst, JNI_OK);
+    env->ReleaseByteArrayElements(src_i420_data, src, NULL);
+    env->ReleaseByteArrayElements(dst_i420_data, dst, NULL);
     return ret;
 }
 
@@ -72,13 +65,13 @@ int i420_mirror(jbyte *src_i420_data, int width, int height, jbyte *dst_i420_dat
 
 jint jni_i420_mirror(JNIEnv *env, jclass clazz, jbyteArray src_i420_data, jint width, jint height,
                      jbyteArray dst_i420_data) {
-    jbyte *src = env->GetByteArrayElements(src_i420_data, JNI_FALSE);
-    jbyte *dst = env->GetByteArrayElements(dst_i420_data, JNI_FALSE);
+    jbyte *src = env->GetByteArrayElements(src_i420_data, NULL);
+    jbyte *dst = env->GetByteArrayElements(dst_i420_data, NULL);
 
     int ret = i420_mirror(src, width, height, dst);
 
-    env->ReleaseByteArrayElements(src_i420_data, src, JNI_OK);
-    env->ReleaseByteArrayElements(dst_i420_data, dst, JNI_OK);
+    env->ReleaseByteArrayElements(src_i420_data, src, NULL);
+    env->ReleaseByteArrayElements(dst_i420_data, dst, NULL);
     return ret;
 }
 
@@ -106,13 +99,13 @@ int nv21_to_i420(jbyte *src_nv21_data, int width, int height, jbyte *src_i420_da
 
 jint jni_nv21_to_i420(JNIEnv *env, jclass clazz, jbyteArray src_nv21_data, int width, int height,
                       jbyteArray dst_i420_data) {
-    jbyte *src = env->GetByteArrayElements(src_nv21_data, JNI_FALSE);
-    jbyte *dst = env->GetByteArrayElements(dst_i420_data, JNI_FALSE);
+    jbyte *src = env->GetByteArrayElements(src_nv21_data, NULL);
+    jbyte *dst = env->GetByteArrayElements(dst_i420_data, NULL);
 
     int ret = nv21_to_i420(src, width, height, dst);
 
-    env->ReleaseByteArrayElements(src_nv21_data, src, JNI_OK);
-    env->ReleaseByteArrayElements(dst_i420_data, dst, JNI_OK);
+    env->ReleaseByteArrayElements(src_nv21_data, src, 0);
+    env->ReleaseByteArrayElements(dst_i420_data, dst, 0);
     return ret;
 }
 
@@ -187,13 +180,13 @@ int i420_scale(jbyte *src_i420_data, int width, int height,
 jint jni_i420_scale(JNIEnv *env, jclass clazz, jbyteArray src_i420_data, jint width, jint height,
                     jbyteArray dst_i420_data, jint dst_width,
                     jint dst_height, jint mode) {
-    jbyte *src = env->GetByteArrayElements(src_i420_data, JNI_FALSE);
-    jbyte *dst = env->GetByteArrayElements(dst_i420_data, JNI_FALSE);
+    jbyte *src = env->GetByteArrayElements(src_i420_data, NULL);
+    jbyte *dst = env->GetByteArrayElements(dst_i420_data, NULL);
 
     int ret = i420_scale(src, width, height, dst, dst_width, dst_height, mode);
 
-    env->ReleaseByteArrayElements(src_i420_data, src, JNI_OK);
-    env->ReleaseByteArrayElements(dst_i420_data, dst, JNI_OK);
+    env->ReleaseByteArrayElements(src_i420_data, src, 0);
+    env->ReleaseByteArrayElements(dst_i420_data, dst, 0);
     return ret;
 }
 
@@ -208,8 +201,8 @@ jint jni_i420_to_nv21(JNIEnv *env, jclass clazz, jbyteArray i420_data, jint widt
     size_t y_size = (size_t) (src_stride_y * height);
     size_t u_size = (size_t) (src_stride_u * (height >> 1));
 
-    jbyte *src = env->GetByteArrayElements(i420_data, JNI_FALSE);
-    jbyte *dst = env->GetByteArrayElements(nv21_data, JNI_FALSE);
+    jbyte *src = env->GetByteArrayElements(i420_data, NULL);
+    jbyte *dst = env->GetByteArrayElements(nv21_data, NULL);
 
     uint8_t *src_y = (uint8_t *) src;
     uint8_t *src_u = (uint8_t *) src + y_size;
@@ -226,8 +219,8 @@ jint jni_i420_to_nv21(JNIEnv *env, jclass clazz, jbyteArray i420_data, jint widt
             dst_vu, dst_stride_vu,
             width, height);
 
-    env->ReleaseByteArrayElements(i420_data, src, JNI_OK);
-    env->ReleaseByteArrayElements(nv21_data, dst, JNI_OK);
+    env->ReleaseByteArrayElements(i420_data, src, 0);
+    env->ReleaseByteArrayElements(nv21_data, dst, 0);
 
     return ret;
 }
