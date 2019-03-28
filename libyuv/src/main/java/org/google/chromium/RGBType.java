@@ -6,8 +6,9 @@ public interface RGBType {
     int ABGR = 0x41;
     int BGRA = 0x42;
     int ARGB = 0x43;
+    int ARGB4444 = 0x44;
     //3
     int RGB24 = 0x34;
     //2
-    int RGB565 = 0x25;
+    int RGB565 = 0x35;
 }

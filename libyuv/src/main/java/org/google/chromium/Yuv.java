@@ -2,7 +2,9 @@ package org.google.chromium;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.ImageFormat;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
 import android.util.Log;
@@ -45,52 +47,32 @@ public class Yuv {
     }
 
     public static Yuv toYuv(Bitmap bitmap) {
-        int bytes = bitmap.getByteCount();
-
-        ByteBuffer buf = ByteBuffer.allocate(bytes);
-        bitmap.copyPixelsToBuffer(buf);
+//        Bitmap bitmap = Bitmap.createBitmap(bmp.getWidth(), bmp.getHeight(), Bitmap.Config.RGB_565);
+//        Canvas canvas = new Canvas(bitmap);
+//        Paint paint = new Paint();
+//        canvas.drawBitmap(bmp, 0, 0, paint);
 
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();
-        int type, num;
-        if (bitmap.getConfig() == Bitmap.Config.ARGB_4444) {
-            num = 4;
-            type = RGBType.ARGB;
-        } else if (bitmap.getConfig() == Bitmap.Config.ARGB_8888) {
-            num = 4;
-            type = RGBType.ARGB;
-        } else if (bitmap.getConfig() == Bitmap.Config.RGB_565) {
-            num = 3;
-            type = RGBType.RGB565;
-        } else {
-            num = 3;
-            type = RGBType.RGB565;
-        }
+        boolean is565 = bitmap.getConfig() == Bitmap.Config.RGB_565;
         int[] pixels = new int[width * height];
         bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
         Yuv yuv = new Yuv(width, height, Yuv.Type.I420);
-        byte[] src = new byte[width * height * num];
         int arr_len = pixels.length;
-        int tmp, a, R, G, B;
+        int tmp, a, R, G, B, num = 4;
+        byte[] src = new byte[width * height * num];
         for (int i = 0; i < arr_len; i++) {
             tmp = pixels[i];
-            R = (tmp & 0xff0000) >> 16;
-            G = (tmp & 0xff00) >> 8;
-            B = (tmp & 0xff);
-            if (num == 4) {
-                a = (tmp & 0xff000000) >> 24; // a is not used obviously
-                src[i * num] = (byte) a;
-                src[i * num + 1] = (byte) R;
-                src[i * num + 2] = (byte) G;
-                src[i * num + 3] = (byte) B;
-            } else {
-                src[i * num] = (byte) R;
-                src[i * num + 1] = (byte) G;
-                src[i * num + 2] = (byte) B;
-            }
+            a = (tmp & 0xff000000) >> 24; // a is not used obviously
+            R = (tmp & 0x00ff0000) >> 16;
+            G = (tmp & 0x0000ff00) >> 8;
+            B = (tmp & 0x000000ff);
+            src[i * num] = (byte) (is565 ? 0x255 : a);
+            src[i * num + 1] = (byte) R;
+            src[i * num + 2] = (byte) G;
+            src[i * num + 3] = (byte) B;
         }
-        Log.d("yuv_util", String.format("toYuv type=%x", type));
-        int err = YuvJni.convertToi420(type, src, width, height, yuv.data);
+        int err = YuvJni.convertToi420(RGBType.ARGB, src, width, height, yuv.data);
         if (err == 0) {
             return yuv;
         }

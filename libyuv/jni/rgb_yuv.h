@@ -11,7 +11,11 @@
 
 static int (*i420Func[])(const uint8_t *,int,uint8_t *,int,uint8_t *,int ,uint8_t *,int,int,int)={
         //4
-        libyuv::ABGRToI420,libyuv::RGBAToI420,libyuv::ARGBToI420,libyuv::BGRAToI420,
+        libyuv::ABGRToI420,
+        libyuv::RGBAToI420,
+        libyuv::ARGBToI420,
+        libyuv::BGRAToI420,
+        libyuv::ARGB4444ToI420,
         //3
         libyuv::RGB24ToI420,libyuv::RGB565ToI420
 };
@@ -27,7 +31,4 @@ static int (*i420Func[])(const uint8_t *,int,uint8_t *,int,uint8_t *,int ,uint8_
  */
 jint jni_convert_i420(JNIEnv *env, jclass clazz, jint type, jbyteArray rgba, jint width, jint height,
                       jbyteArray yuv);
-jint jni_convert_i420_i(JNIEnv *env, jclass clazz, jint type, jintArray rgba, jint width, jint height,
-                        jbyteArray yuv);
-
 #endif //LIBYUV_WRAPPER_RGB_YUV_H

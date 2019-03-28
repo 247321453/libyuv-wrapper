@@ -101,11 +101,4 @@ public class YuvJni {
      * @param height 图片的高
      */
     public static native int convertToi420(int type, byte[] rgbSrc, int width, int height, byte[] i420Dst);
-
-    /**
-     * @param type   @see RGBType
-     * @param width  图片的宽
-     * @param height 图片的高
-     */
-    public static native int convertToi420I(int type, int[] rgbSrc, int width, int height, byte[] i420Dst);
 }
