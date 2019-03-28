@@ -56,13 +56,36 @@ public abstract class Yuv {
         return new YuvI420(width, height, src);
     }
 
+    public static YuvNv21 toYuvNv21(Bitmap bitmap) {
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+        YuvNv21 yuv = new YuvNv21(width, height);
+        byte[] src = toArgbBytes(bitmap);
+        int err = YuvJni.argbToNv21(src, width, height, yuv.data);
+        if (err == 0) {
+            return yuv;
+        }
+        return null;
+    }
+
     public static YuvI420 toYuvI420(Bitmap bitmap) {
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+        YuvI420 yuv = new YuvI420(width, height);
+        byte[] src = toArgbBytes(bitmap);
+        int err = YuvJni.argbToI420(src, width, height, yuv.data);
+        if (err == 0) {
+            return yuv;
+        }
+        return null;
+    }
+
+    public static byte[] toArgbBytes(Bitmap bitmap){
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();
         boolean is565 = bitmap.getConfig() == Bitmap.Config.RGB_565;
         int[] pixels = new int[width * height];
         bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
-        YuvI420 yuvI420 = new YuvI420(width, height);
         int arr_len = pixels.length;
         int tmp, a, R, G, B, num = 4;
         byte[] src = new byte[width * height * num];
@@ -77,10 +100,6 @@ public abstract class Yuv {
             src[i * num + 2] = (byte) G;
             src[i * num + 3] = (byte) B;
         }
-        int err = YuvJni.argbToi420(src, width, height, yuvI420.data);
-        if (err == 0) {
-            return yuvI420;
-        }
-        return null;
+        return src;
     }
 }

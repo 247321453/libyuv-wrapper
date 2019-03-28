@@ -100,5 +100,11 @@ class YuvJni {
      * @param width  图片的宽
      * @param height 图片的高
      */
-    static native int argbToi420(byte[] rgbSrc, int width, int height, byte[] i420Dst);
+    static native int argbToI420(byte[] rgbSrc, int width, int height, byte[] i420Dst);
+
+    /**
+     * @param width  图片的宽
+     * @param height 图片的高
+     */
+    static native int argbToNv21(byte[] rgbSrc, int width, int height, byte[] nv21Data);
 }

@@ -33,6 +33,7 @@ int i420_rotate(jbyte *src_i420_data, int width, int height, jbyte *dst_i420_dat
     }
     return ret;
 }
+
 jint jni_i420_rotate(JNIEnv *env, jclass clazz, jbyteArray src_i420_data, jint width, jint height,
                      jbyteArray dst_i420_data, jint degree) {
     jbyte *src = env->GetByteArrayElements(src_i420_data, NULL);
@@ -194,8 +195,7 @@ jint jni_i420_scale(JNIEnv *env, jclass clazz, jbyteArray src_i420_data, jint wi
     return ret;
 }
 
-jint jni_i420_to_nv21(JNIEnv *env, jclass clazz, jbyteArray i420_data, jint width, jint height,
-                      jbyteArray nv21_data) {
+int i420_to_nv21(jbyte *src, int width, int height, jbyte *dst) {
 
     int dst_stride_y = width, src_stride_y = width;
     int dst_stride_vu = width;
@@ -204,9 +204,6 @@ jint jni_i420_to_nv21(JNIEnv *env, jclass clazz, jbyteArray i420_data, jint widt
 
     size_t y_size = (size_t) (src_stride_y * height);
     size_t u_size = (size_t) (src_stride_u * (height >> 1));
-
-    jbyte *src = env->GetByteArrayElements(i420_data, NULL);
-    jbyte *dst = env->GetByteArrayElements(nv21_data, NULL);
 
     uint8_t *src_y = (uint8_t *) src;
     uint8_t *src_u = (uint8_t *) src + y_size;
@@ -223,9 +220,18 @@ jint jni_i420_to_nv21(JNIEnv *env, jclass clazz, jbyteArray i420_data, jint widt
             dst_vu, dst_stride_vu,
             width, height);
 
+    return ret;
+}
+
+jint jni_i420_to_nv21(JNIEnv *env, jclass clazz, jbyteArray i420_data, jint width, jint height,
+                      jbyteArray nv21_data) {
+    jbyte *src = env->GetByteArrayElements(i420_data, NULL);
+    jbyte *dst = env->GetByteArrayElements(nv21_data, NULL);
+
+    int ret = i420_to_nv21(src, width, height, dst);
+
     env->ReleaseByteArrayElements(i420_data, src, 0);
     env->ReleaseByteArrayElements(nv21_data, dst, 0);
-
     return ret;
 }
 
@@ -246,9 +252,9 @@ void jni_compress_i420(JNIEnv *env, jclass clazz,
 
     nv21_to_i420(Src_data, width, height, Src_i420_data);
 
-    if(width == dst_width && height == dst_height) {
+    if (width == dst_width && height == dst_height) {
         //
-    }else{
+    } else {
         i420_scale(Src_i420_data, width, height, Src_i420_data_scale, dst_width, dst_height, mode);
     }
     if (isMirror) {
@@ -258,12 +264,15 @@ void jni_compress_i420(JNIEnv *env, jclass clazz,
         i420_rotate(Src_i420_data_scale, dst_width, dst_height, Dst_data, degree);
     }
     env->ReleaseByteArrayElements(dst_, Dst_data, 0);
+    free(Src_i420_data);
+    free(Src_i420_data_scale);
+    free(Src_i420_data_rotate);
 }
 
 /***
  * byte数组转i420
  */
-jint jni_argb_to_i420(JNIEnv *env, jclass clazz,jbyteArray rgba, jint width, jint height,
+jint jni_argb_to_i420(JNIEnv *env, jclass clazz, jbyteArray rgba, jint width, jint height,
                       jbyteArray yuv) {
     int rgba_stride = 4 * width;
     int y_stride = width;
@@ -274,10 +283,10 @@ jint jni_argb_to_i420(JNIEnv *env, jclass clazz,jbyteArray rgba, jint width, jin
 
     jbyte *rgbaData = env->GetByteArrayElements(rgba, NULL);
     jbyte *yuvData = env->GetByteArrayElements(yuv, NULL);
-    int ret = libyuv::BGRAToI420((uint8_t*)rgbaData, rgba_stride,
-                                 (uint8_t*)yuvData, y_stride,
-                                 (uint8_t*)yuvData + ySize, u_stride,
-                                 (uint8_t*)yuvData + ySize + uSize, v_stride,
+    int ret = libyuv::BGRAToI420((uint8_t *) rgbaData, rgba_stride,
+                                 (uint8_t *) yuvData, y_stride,
+                                 (uint8_t *) yuvData + ySize, u_stride,
+                                 (uint8_t *) yuvData + ySize + uSize, v_stride,
                                  width, height);
 
     env->ReleaseByteArrayElements(rgba, rgbaData, 0);
@@ -286,6 +295,35 @@ jint jni_argb_to_i420(JNIEnv *env, jclass clazz,jbyteArray rgba, jint width, jin
     return ret;
 }
 
+jint jni_argb_to_nv21(JNIEnv *env, jclass clazz, jbyteArray rgba, jint width, jint height,
+                      jbyteArray yuv) {
+    int rgba_stride = 4 * width;
+    int y_stride = width;
+    int u_stride = width >> 1;
+    int v_stride = u_stride;
+    size_t ySize = (size_t) (y_stride * height);
+    size_t uSize = (size_t) (u_stride * height >> 1);
+
+    jbyte *rgbaData = env->GetByteArrayElements(rgba, NULL);
+    jbyte *nv21Data = env->GetByteArrayElements(yuv, NULL);
+
+    jbyte *i420_data = (jbyte *) malloc(sizeof(jbyte) * width * height * 3 / 2);
+
+    int ret = libyuv::BGRAToI420((uint8_t *) rgbaData, rgba_stride,
+                                 (uint8_t *) i420_data, y_stride,
+                                 (uint8_t *) i420_data + ySize, u_stride,
+                                 (uint8_t *) i420_data + ySize + uSize, v_stride,
+                                 width, height);
+    if(ret != 0){
+        return ret;
+    }
+    ret = i420_to_nv21(i420_data, width, height, nv21Data);
+
+    env->ReleaseByteArrayElements(rgba, rgbaData, 0);
+    env->ReleaseByteArrayElements(yuv, nv21Data, 0);
+    free(i420_data);
+    return ret;
+}
 /*
 boolean	Z
 long	J
@@ -303,14 +341,15 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *_vm, void *) {
     _vm->GetEnv(reinterpret_cast<void **>(&env), JNI_VERSION_1_6);
     jclass nativeEngineClass = (jclass) env->NewGlobalRef(env->FindClass(JNI_CLASS_NAME));
     static JNINativeMethod methods[] = {
-            {"argbToi420",  "([BII[B)I",     (void *) jni_argb_to_i420},
-            {"i420ToNv21",     "([BII[B)I",      (void *) jni_i420_to_nv21},
-            {"nv21ToI420",     "([BII[B)I",      (void *) jni_nv21_to_i420},
-            {"i420Scale",      "([BII[BIII)I",   (void *) jni_i420_scale},
-            {"i420Crop",       "([BII[BIIII)I",  (void *) jni_i420_crop},
-            {"i420Mirror",     "([BII[B)I",      (void *) jni_i420_mirror},
-            {"i420Rotate",     "([BII[BI)I",     (void *) jni_i420_rotate},
-            {"i420Compress",   "([BII[BIIIIZ)V", (void *) jni_compress_i420},
+            {"argbToI420",   "([BII[B)I",      (void *) jni_argb_to_i420},
+            {"argbToNv21",   "([BII[B)I",      (void *) jni_argb_to_nv21},
+            {"i420ToNv21",   "([BII[B)I",      (void *) jni_i420_to_nv21},
+            {"nv21ToI420",   "([BII[B)I",      (void *) jni_nv21_to_i420},
+            {"i420Scale",    "([BII[BIII)I",   (void *) jni_i420_scale},
+            {"i420Crop",     "([BII[BIIII)I",  (void *) jni_i420_crop},
+            {"i420Mirror",   "([BII[B)I",      (void *) jni_i420_mirror},
+            {"i420Rotate",   "([BII[BI)I",     (void *) jni_i420_rotate},
+            {"i420Compress", "([BII[BIIIIZ)V", (void *) jni_compress_i420},
     };
     int len = 8;
     if (env->RegisterNatives(nativeEngineClass, methods, len) < 0) {
