@@ -68,9 +68,7 @@ LOCAL_C_INCLUDES += $(LOCAL_PATH)/libyuv/include
 LOCAL_MODULE := libyuv
 
 LOCAL_SRC_FILES  := \
-    yuv_jni.cpp \
-    yuv.cpp \
-    rgb_yuv.cpp
+    yuv_jni.cpp
 
 #LOCAL_CFLAGS += -DDISABLE_LOG=1
 
