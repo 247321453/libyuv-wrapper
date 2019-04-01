@@ -115,4 +115,10 @@ class YuvJni {
     static native int nv21DrawSurface(Surface surface, byte[] nv21, int width, int height);
 
     static native int rgbaDrawSurface(Surface surface, byte[] argb, int width, int height);
+
+    static native long createDrawer(Surface surface);
+
+    static native int rgbaDraw(long drawer, byte[] rgba, int width, int height);
+
+    static native void releaseDrawer(long drawer);
 }

@@ -4,6 +4,7 @@
 
 #include <libyuv.h>
 #include "yuv_jni.h"
+#include "surface_draw.h"
 #include <android/native_window_jni.h>
 #include <string>
 
@@ -424,6 +425,35 @@ jint jni_nv21_draw_surface(JNIEnv *env, jclass, jobject surface, jbyteArray nv21
     free(i420Data);
     return ret;
 }
+
+jlong jni_create_drawer(JNIEnv *env, jclass, jobject surface) {
+    ANativeWindow *nativeWindow = ANativeWindow_fromSurface(env, surface);
+    if (nativeWindow == NULL) {
+        return 0;
+    }
+    drawer::SurfaceDrawer *surfaceDrawer = new drawer::SurfaceDrawer(nativeWindow);
+    return (jlong) surfaceDrawer;
+}
+
+void jni_release_drawer(JNIEnv *env, jclass, jlong p_drawer){
+    if(p_drawer != 0){
+        drawer::SurfaceDrawer *drawer = (drawer::SurfaceDrawer *)p_drawer;
+        drawer->Release();
+        free(drawer);
+    }
+}
+jint jni_drawer_rgba_draw_surface(JNIEnv *env, jclass, jlong p_drawer, jbyteArray rgba, jint width,
+                                                       jint height) {
+    if(p_drawer != 0){
+        drawer::SurfaceDrawer *drawer = (drawer::SurfaceDrawer *)p_drawer;
+        jbyte *srcData = env->GetByteArrayElements(rgba, NULL);
+        int ret = drawer->RGBADrawSurface(srcData, width, height);
+        env->ReleaseByteArrayElements(rgba, srcData, 0);
+        return ret;
+    }
+    return -1;
+}
+
 /*
 boolean	Z
 long	J
@@ -450,12 +480,17 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *_vm, void *) {
             {"i420Mirror",      "([BII[B)I",                     (void *) jni_i420_mirror},
             {"i420Rotate",      "([BII[BI)I",                    (void *) jni_i420_rotate},
             {"i420Compress",    "([BII[BIIIIZ)V",                (void *) jni_compress_i420},
+
             {"i420DrawSurface", "(Landroid/view/Surface;[BII)I", (void *) jni_i420_draw_surface},
             {"nv21DrawSurface", "(Landroid/view/Surface;[BII)I", (void *) jni_nv21_draw_surface},
             {"rgbaDrawSurface", "(Landroid/view/Surface;[BII)I", (void *) jni_rgba_draw_surface},
+
+            {"createDrawer",    "(Landroid/view/Surface;)J",     (void *) jni_create_drawer},
+            {"releaseDrawer",   "(J)V",                          (void *) jni_release_drawer},
+            {"rgbaDraw",        "(J[BII)I",                      (void *) jni_drawer_rgba_draw_surface},
     };
-    int len = 112;
-    if (env->RegisterNatives(nativeEngineClass, methods, len) < 0) {
+
+    if (env->RegisterNatives(nativeEngineClass, methods, 15) < 0) {
         return JNI_ERR;
     }
     return JNI_VERSION_1_6;
