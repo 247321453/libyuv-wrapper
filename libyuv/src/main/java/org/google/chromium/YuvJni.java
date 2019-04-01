@@ -1,5 +1,7 @@
 package org.google.chromium;
 
+import android.view.Surface;
+
 class YuvJni {
     private static boolean sInit;
 
@@ -107,4 +109,10 @@ class YuvJni {
      * @param height 图片的高
      */
     static native int argbToNv21(byte[] rgbSrc, int width, int height, byte[] nv21Data);
+
+    static native int i420DrawSurface(Surface surface, byte[] i420, int width, int height);
+
+    static native int nv21DrawSurface(Surface surface, byte[] nv21, int width, int height);
+
+    static native int rgbaDrawSurface(Surface surface, byte[] argb, int width, int height);
 }

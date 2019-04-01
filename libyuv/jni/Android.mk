@@ -74,6 +74,6 @@ LOCAL_SRC_FILES  := \
 
 LOCAL_STATIC_LIBRARIES := libyuv_static
 
-LOCAL_LDLIBS := -llog
+LOCAL_LDLIBS := -llog -landroid
 
 include $(BUILD_SHARED_LIBRARY)

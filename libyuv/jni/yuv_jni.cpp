@@ -4,6 +4,8 @@
 
 #include <libyuv.h>
 #include "yuv_jni.h"
+#include <android/native_window_jni.h>
+#include <string>
 
 int i420_rotate(jbyte *src_i420_data, int width, int height, jbyte *dst_i420_data, int degree) {
     jint src_i420_y_size = width * height;
@@ -34,7 +36,7 @@ int i420_rotate(jbyte *src_i420_data, int width, int height, jbyte *dst_i420_dat
     return ret;
 }
 
-jint jni_i420_rotate(JNIEnv *env, jclass clazz, jbyteArray src_i420_data, jint width, jint height,
+jint jni_i420_rotate(JNIEnv *env, jclass, jbyteArray src_i420_data, jint width, jint height,
                      jbyteArray dst_i420_data, jint degree) {
     jbyte *src = env->GetByteArrayElements(src_i420_data, NULL);
     jbyte *dst = env->GetByteArrayElements(dst_i420_data, NULL);
@@ -51,12 +53,12 @@ int i420_mirror(jbyte *src_i420_data, int width, int height, jbyte *dst_i420_dat
     jint src_i420_u_size = (width >> 1) * (height >> 1);
 
     uint8_t *src_i420_y_data = (uint8_t *) src_i420_data;
-    uint8_t *src_i420_u_data = (uint8_t *) (src_i420_data + src_i420_y_size);
-    uint8_t *src_i420_v_data = (uint8_t *) (src_i420_data + src_i420_y_size + src_i420_u_size);
+    uint8_t *src_i420_u_data = (uint8_t *) src_i420_data + src_i420_y_size;
+    uint8_t *src_i420_v_data = (uint8_t *) src_i420_data + src_i420_y_size + src_i420_u_size;
 
     uint8_t *dst_i420_y_data = (uint8_t *) dst_i420_data;
-    uint8_t *dst_i420_u_data = (uint8_t *) (dst_i420_data + src_i420_y_size);
-    uint8_t *dst_i420_v_data = (uint8_t *) (dst_i420_data + src_i420_y_size + src_i420_u_size);
+    uint8_t *dst_i420_u_data = (uint8_t *) dst_i420_data + src_i420_y_size;
+    uint8_t *dst_i420_v_data = (uint8_t *) dst_i420_data + src_i420_y_size + src_i420_u_size;
 
     int ret = libyuv::I420Mirror(src_i420_y_data, width,
                                  src_i420_u_data, width >> 1,
@@ -68,7 +70,7 @@ int i420_mirror(jbyte *src_i420_data, int width, int height, jbyte *dst_i420_dat
     return ret;
 }
 
-jint jni_i420_mirror(JNIEnv *env, jclass clazz, jbyteArray src_i420_data, jint width, jint height,
+jint jni_i420_mirror(JNIEnv *env, jclass, jbyteArray src_i420_data, jint width, jint height,
                      jbyteArray dst_i420_data) {
     jbyte *src = env->GetByteArrayElements(src_i420_data, NULL);
     jbyte *dst = env->GetByteArrayElements(dst_i420_data, NULL);
@@ -85,12 +87,11 @@ int nv21_to_i420(jbyte *src_nv21_data, int width, int height, jbyte *src_i420_da
     jint src_u_size = (width >> 1) * (height >> 1);
 
     uint8_t *src_nv21_y_data = (uint8_t *) src_nv21_data;
-    uint8_t *src_nv21_vu_data = (uint8_t *) (src_nv21_data + src_y_size);
+    uint8_t *src_nv21_vu_data = (uint8_t *) src_nv21_data + src_y_size;
 
     uint8_t *src_i420_y_data = (uint8_t *) src_i420_data;
-    uint8_t *src_i420_u_data = (uint8_t *) (src_i420_data + src_y_size);
-    uint8_t *src_i420_v_data = (uint8_t *) (src_i420_data + src_y_size + src_u_size);
-
+    uint8_t *src_i420_u_data = (uint8_t *) src_i420_data + src_y_size;
+    uint8_t *src_i420_v_data = (uint8_t *) src_i420_data + src_y_size + src_u_size;
 
     int ret = libyuv::NV21ToI420(
             src_nv21_y_data, width,
@@ -136,8 +137,8 @@ jint jni_i420_crop(JNIEnv *env, jclass clazz, jbyteArray src_, jint width,
 
     uint8_t *src = (uint8_t *) src_i420_data;
     uint8_t *dst_i420_y_data = (uint8_t *) dst_i420_data;
-    uint8_t *dst_i420_u_data = (uint8_t *) (dst_i420_data + dst_i420_y_size);
-    uint8_t *dst_i420_v_data = (uint8_t *) (dst_i420_data + dst_i420_y_size + dst_i420_u_size);
+    uint8_t *dst_i420_u_data = (uint8_t *) dst_i420_data + dst_i420_y_size;
+    uint8_t *dst_i420_v_data = (uint8_t *) dst_i420_data + dst_i420_y_size + dst_i420_u_size;
 
     int ret = libyuv::ConvertToI420(
             src, src_length,
@@ -160,15 +161,15 @@ int i420_scale(jbyte *src_i420_data, int width, int height,
     jint src_i420_u_size = (width >> 1) * (height >> 1);
 
     uint8_t *src_i420_y_data = (uint8_t *) src_i420_data;
-    uint8_t *src_i420_u_data = (uint8_t *) (src_i420_data + src_i420_y_size);
-    uint8_t *src_i420_v_data = (uint8_t *) (src_i420_data + src_i420_y_size + src_i420_u_size);
+    uint8_t *src_i420_u_data = (uint8_t *) src_i420_data + src_i420_y_size;
+    uint8_t *src_i420_v_data = (uint8_t *) src_i420_data + src_i420_y_size + src_i420_u_size;
 
     jint dst_i420_y_size = dst_width * dst_height;
     jint dst_i420_u_size = (dst_width >> 1) * (dst_height >> 1);
 
     uint8_t *dst_i420_y_data = (uint8_t *) dst_i420_data;
-    uint8_t *dst_i420_u_data = (uint8_t *) (dst_i420_data + dst_i420_y_size);
-    uint8_t *dst_i420_v_data = (uint8_t *) (dst_i420_data + dst_i420_y_size + dst_i420_u_size);
+    uint8_t *dst_i420_u_data = (uint8_t *) dst_i420_data + dst_i420_y_size;
+    uint8_t *dst_i420_v_data = (uint8_t *) dst_i420_data + dst_i420_y_size + dst_i420_u_size;
 
     return libyuv::I420Scale(
             src_i420_y_data, width,
@@ -202,8 +203,8 @@ int i420_to_nv21(jbyte *src, int width, int height, jbyte *dst) {
     int src_stride_u = width >> 1;
     int src_stride_v = src_stride_u;
 
-    size_t y_size = (size_t) (src_stride_y * height);
-    size_t u_size = (size_t) (src_stride_u * (height >> 1));
+    size_t y_size = static_cast<size_t>(src_stride_y * height);
+    size_t u_size = static_cast<size_t>(src_stride_u * (height >> 1));
 
     uint8_t *src_y = (uint8_t *) src;
     uint8_t *src_u = (uint8_t *) src + y_size;
@@ -278,8 +279,8 @@ jint jni_argb_to_i420(JNIEnv *env, jclass clazz, jbyteArray rgba, jint width, ji
     int y_stride = width;
     int u_stride = width >> 1;
     int v_stride = u_stride;
-    size_t ySize = (size_t) (y_stride * height);
-    size_t uSize = (size_t) (u_stride * height >> 1);
+    size_t ySize = (y_stride * height);
+    size_t uSize = (u_stride * height >> 1);
 
     jbyte *rgbaData = env->GetByteArrayElements(rgba, NULL);
     jbyte *yuvData = env->GetByteArrayElements(yuv, NULL);
@@ -295,14 +296,14 @@ jint jni_argb_to_i420(JNIEnv *env, jclass clazz, jbyteArray rgba, jint width, ji
     return ret;
 }
 
-jint jni_argb_to_nv21(JNIEnv *env, jclass clazz, jbyteArray rgba, jint width, jint height,
+jint jni_argb_to_nv21(JNIEnv *env, jclass, jbyteArray rgba, jint width, jint height,
                       jbyteArray yuv) {
     int rgba_stride = 4 * width;
     int y_stride = width;
     int u_stride = width >> 1;
     int v_stride = u_stride;
-    size_t ySize = (size_t) (y_stride * height);
-    size_t uSize = (size_t) (u_stride * height >> 1);
+    size_t ySize = static_cast<size_t>(y_stride * height);
+    size_t uSize = static_cast<size_t>(u_stride * (height >> 1));
 
     jbyte *rgbaData = env->GetByteArrayElements(rgba, NULL);
     jbyte *nv21Data = env->GetByteArrayElements(yuv, NULL);
@@ -314,7 +315,7 @@ jint jni_argb_to_nv21(JNIEnv *env, jclass clazz, jbyteArray rgba, jint width, ji
                                  (uint8_t *) i420_data + ySize, u_stride,
                                  (uint8_t *) i420_data + ySize + uSize, v_stride,
                                  width, height);
-    if(ret != 0){
+    if (ret != 0) {
         return ret;
     }
     ret = i420_to_nv21(i420_data, width, height, nv21Data);
@@ -322,6 +323,105 @@ jint jni_argb_to_nv21(JNIEnv *env, jclass clazz, jbyteArray rgba, jint width, ji
     env->ReleaseByteArrayElements(rgba, rgbaData, 0);
     env->ReleaseByteArrayElements(yuv, nv21Data, 0);
     free(i420_data);
+    return ret;
+}
+
+int rgba_draw_surface(JNIEnv *env, jobject surface, jbyte *rgba, int width, int height) {
+    ANativeWindow *nativeWindow = ANativeWindow_fromSurface(env, surface);
+    if(nativeWindow == NULL){
+        ALOGD("surface is null or invisible");
+        return -1;
+    }
+    ANativeWindow_setBuffersGeometry(nativeWindow, width, height, WINDOW_FORMAT_RGBA_8888);
+    ANativeWindow_Buffer windowBuffer;
+    // lock native window buffer
+    ALOGD("lock surface width=%d, height=%d", width, height);
+    ANativeWindow_lock(nativeWindow, &windowBuffer, 0);
+    // 获取stride
+    uint8_t *dst = (uint8_t *) windowBuffer.bits;
+    int dstStride = windowBuffer.stride * 4;
+    uint8_t *src = (uint8_t *) rgba;
+    size_t srcStride = (size_t) (4 * width);//linesize
+    // 由于window的stride和帧的stride不同,因此需要逐行复制
+    int h;
+    for (h = 0; h < height; h++) {
+        memcpy(dst + h * dstStride, src + h * srcStride, srcStride);
+    }
+    ANativeWindow_unlockAndPost(nativeWindow);
+    ANativeWindow_release(nativeWindow);
+    ALOGD("lock release");
+    return 0;
+}
+
+jint jni_rgba_draw_surface(JNIEnv *env, jclass, jobject surface, jbyteArray rgba, jint width,
+                           jint height) {
+    jbyte *srcData = env->GetByteArrayElements(rgba, NULL);
+    int ret = rgba_draw_surface(env, surface, srcData, width, height);
+    env->ReleaseByteArrayElements(rgba, srcData, 0);
+    return ret;
+}
+
+int i420_draw_surface(JNIEnv *env, jobject surface, jbyte *i420Data, int width, int height) {
+    jbyte *argbData = (jbyte *) malloc(sizeof(jbyte) * width * height * 4);
+    /**
+     * int I420ToBGRA(const uint8_t* src_y,
+               int src_stride_y,
+               const uint8_t* src_u,
+               int src_stride_u,
+               const uint8_t* src_v,
+               int src_stride_v,
+               uint8_t* dst_bgra,
+               int dst_stride_bgra,
+               int width,
+               int height)
+     */
+    uint8_t *dst_y = (uint8_t *) i420Data;
+    int dst_y_stride = width;
+    int dst_u_stride = width >> 1;
+    int dst_v_stride = dst_u_stride;
+    size_t ySize = static_cast<size_t>(width * height);
+    size_t uSize = static_cast<size_t>(dst_u_stride * (height >> 1));
+
+    uint8_t *dst_u = (uint8_t *) i420Data + ySize;
+
+    uint8_t *dst_v = (uint8_t *) i420Data + ySize + uSize;
+
+    //rgba
+    //abgr
+    int ret = libyuv::I420ToABGR(
+            dst_y, dst_y_stride,
+            dst_u, dst_u_stride,
+            dst_v, dst_v_stride,
+            (uint8_t *) argbData,
+            width * 4,
+            width, height);
+    if (ret != 0) {
+        return ret;
+    }
+    ret = rgba_draw_surface(env, surface, argbData, width, height);
+    free(argbData);
+    return ret;
+}
+
+jint jni_i420_draw_surface(JNIEnv *env, jclass, jobject surface, jbyteArray i420, jint width,
+                           jint height) {
+    jbyte *i420Data = env->GetByteArrayElements(i420, NULL);
+    int ret = i420_draw_surface(env, surface, i420Data, width, height);
+    env->ReleaseByteArrayElements(i420, i420Data, 0);
+    return ret;
+}
+
+jint jni_nv21_draw_surface(JNIEnv *env, jclass, jobject surface, jbyteArray nv21, jint width,
+                           jint height) {
+    jbyte *nv21Data = env->GetByteArrayElements(nv21, NULL);
+    jbyte *i420Data = (jbyte *) malloc(sizeof(jbyte) * width * height * 3 / 2);
+    int ret = nv21_to_i420(nv21Data, width, height, i420Data);
+    env->ReleaseByteArrayElements(nv21, nv21Data, 0);
+    if (ret != 0) {
+        return ret;
+    }
+    ret = i420_draw_surface(env, surface, i420Data, width, height);
+    free(i420Data);
     return ret;
 }
 /*
@@ -341,23 +441,26 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *_vm, void *) {
     _vm->GetEnv(reinterpret_cast<void **>(&env), JNI_VERSION_1_6);
     jclass nativeEngineClass = (jclass) env->NewGlobalRef(env->FindClass(JNI_CLASS_NAME));
     static JNINativeMethod methods[] = {
-            {"argbToI420",   "([BII[B)I",      (void *) jni_argb_to_i420},
-            {"argbToNv21",   "([BII[B)I",      (void *) jni_argb_to_nv21},
-            {"i420ToNv21",   "([BII[B)I",      (void *) jni_i420_to_nv21},
-            {"nv21ToI420",   "([BII[B)I",      (void *) jni_nv21_to_i420},
-            {"i420Scale",    "([BII[BIII)I",   (void *) jni_i420_scale},
-            {"i420Crop",     "([BII[BIIII)I",  (void *) jni_i420_crop},
-            {"i420Mirror",   "([BII[B)I",      (void *) jni_i420_mirror},
-            {"i420Rotate",   "([BII[BI)I",     (void *) jni_i420_rotate},
-            {"i420Compress", "([BII[BIIIIZ)V", (void *) jni_compress_i420},
+            {"argbToI420",      "([BII[B)I",                     (void *) jni_argb_to_i420},
+            {"argbToNv21",      "([BII[B)I",                     (void *) jni_argb_to_nv21},
+            {"i420ToNv21",      "([BII[B)I",                     (void *) jni_i420_to_nv21},
+            {"nv21ToI420",      "([BII[B)I",                     (void *) jni_nv21_to_i420},
+            {"i420Scale",       "([BII[BIII)I",                  (void *) jni_i420_scale},
+            {"i420Crop",        "([BII[BIIII)I",                 (void *) jni_i420_crop},
+            {"i420Mirror",      "([BII[B)I",                     (void *) jni_i420_mirror},
+            {"i420Rotate",      "([BII[BI)I",                    (void *) jni_i420_rotate},
+            {"i420Compress",    "([BII[BIIIIZ)V",                (void *) jni_compress_i420},
+            {"i420DrawSurface", "(Landroid/view/Surface;[BII)I", (void *) jni_i420_draw_surface},
+            {"nv21DrawSurface", "(Landroid/view/Surface;[BII)I", (void *) jni_nv21_draw_surface},
+            {"rgbaDrawSurface", "(Landroid/view/Surface;[BII)I", (void *) jni_rgba_draw_surface},
     };
-    int len = 8;
+    int len = 112;
     if (env->RegisterNatives(nativeEngineClass, methods, len) < 0) {
         return JNI_ERR;
     }
     return JNI_VERSION_1_6;
 }
 
-JNIEXPORT void JNI_OnUnload(JavaVM *jvm, void *reserved) {
-
-}
+//JNIEXPORT void JNI_OnUnload(JavaVM *jvm, void *reserved) {
+//
+//}

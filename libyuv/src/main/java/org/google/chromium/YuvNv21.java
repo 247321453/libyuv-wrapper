@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
+import android.view.Surface;
 
 import java.io.ByteArrayOutputStream;
 
@@ -41,5 +42,10 @@ public class YuvNv21 extends Yuv {
         yuvImage.compressToJpeg(new Rect(0, 0, width, height), q, fOut);
         byte[] bitData = fOut.toByteArray();
         return BitmapFactory.decodeByteArray(bitData, 0, bitData.length);
+    }
+
+    @Override
+    public int draw(Surface surface) {
+        return YuvJni.nv21DrawSurface(surface, this.data, width, height);
     }
 }

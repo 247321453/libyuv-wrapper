@@ -6,6 +6,7 @@ import android.graphics.ImageFormat;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
 import android.util.Log;
+import android.view.Surface;
 
 import java.io.ByteArrayOutputStream;
 
@@ -76,7 +77,7 @@ public class YuvI420 extends Yuv {
             this.height = height;
             return true;
         }
-        Log.e(TAG, "scale error:"+ret);
+        Log.e(TAG, "scale error:" + ret);
         return false;
     }
 
@@ -115,5 +116,10 @@ public class YuvI420 extends Yuv {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public int draw(Surface surface) {
+        return YuvJni.i420DrawSurface(surface, this.data, width, height);
     }
 }
