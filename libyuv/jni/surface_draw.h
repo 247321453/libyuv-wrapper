@@ -15,7 +15,7 @@ namespace drawer {
     public:
         SurfaceDrawer(ANativeWindow *);
 
-        int RGBADrawSurface(jbyte *rgba, int width, int height);
+        int DrawSurface(jbyte *rgba, int width, int height);
 
         void Release();
 
@@ -26,6 +26,9 @@ namespace drawer {
     private:
         ANativeWindow_Buffer windowBuffer;
         ANativeWindow *nativeWindow;
+        int lastWidth;
+        int lastHeight;
+        int format;
     };
 }
 

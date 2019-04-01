@@ -20,11 +20,17 @@ void SurfaceDrawer::Release() {
     }
 }
 
-int SurfaceDrawer::RGBADrawSurface(jbyte *rgba, int width, int height) {
+int SurfaceDrawer::DrawSurface(jbyte *rgba, int width, int height) {
     if (nativeWindow == NULL) {
         return -1;
     }
-    ANativeWindow_setBuffersGeometry(nativeWindow, width, height, WINDOW_FORMAT_RGBA_8888);
+    if (lastWidth != width && lastHeight != height && format != WINDOW_FORMAT_RGBA_8888) {
+        lastWidth = width;
+        lastHeight = height;
+        format = WINDOW_FORMAT_RGBA_8888;
+        ANativeWindow_setBuffersGeometry(nativeWindow, width, height, WINDOW_FORMAT_RGBA_8888);
+    }
+
     ANativeWindow_lock(nativeWindow, &windowBuffer, 0);
     uint8_t *dst = (uint8_t *) windowBuffer.bits;
     uint8_t *src = (uint8_t *) rgba;

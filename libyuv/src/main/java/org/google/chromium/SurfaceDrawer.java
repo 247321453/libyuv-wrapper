@@ -21,11 +21,11 @@ public class SurfaceDrawer {
     }
 
     public int draw(Bitmap bitmap) {
-        return draw(BitmapUtils.toRgbABytes(bitmap), bitmap.getWidth(), bitmap.getHeight());
+        return drawArgb(BitmapUtils.toRgbABytes(bitmap), bitmap.getWidth(), bitmap.getHeight());
     }
 
-    public int draw(byte[] rgba, int width, int height) {
-        return YuvJni.rgbaDraw(nativePtr, rgba, width, height);
+    public int drawArgb(byte[] rgba, int width, int height) {
+        return YuvJni.doDrawer(nativePtr, rgba, width, height);
     }
 
     public void Release() {

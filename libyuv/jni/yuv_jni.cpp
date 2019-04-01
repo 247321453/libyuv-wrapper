@@ -336,21 +336,14 @@ int rgba_draw_surface(JNIEnv *env, jobject surface, jbyte *rgba, int width, int 
     ANativeWindow_setBuffersGeometry(nativeWindow, width, height, WINDOW_FORMAT_RGBA_8888);
     ANativeWindow_Buffer windowBuffer;
     // lock native window buffer
-    ALOGD("lock surface width=%d, height=%d", width, height);
     ANativeWindow_lock(nativeWindow, &windowBuffer, 0);
     // 获取stride
     uint8_t *dst = (uint8_t *) windowBuffer.bits;
-    int dstStride = windowBuffer.stride * 4;
     uint8_t *src = (uint8_t *) rgba;
-    size_t srcStride = (size_t) (4 * width);//linesize
-    // 由于window的stride和帧的stride不同,因此需要逐行复制
-    int h;
-    for (h = 0; h < height; h++) {
-        memcpy(dst + h * dstStride, src + h * srcStride, srcStride);
-    }
+    size_t len = static_cast<size_t>(4 * width * height);
+    memcpy(dst, src, len);
     ANativeWindow_unlockAndPost(nativeWindow);
     ANativeWindow_release(nativeWindow);
-    ALOGD("lock release");
     return 0;
 }
 
@@ -442,12 +435,12 @@ void jni_release_drawer(JNIEnv *env, jclass, jlong p_drawer){
         free(drawer);
     }
 }
-jint jni_drawer_rgba_draw_surface(JNIEnv *env, jclass, jlong p_drawer, jbyteArray rgba, jint width,
+jint jni_drawer_draw_surface(JNIEnv *env, jclass, jlong p_drawer, jbyteArray rgba, jint width,
                                                        jint height) {
     if(p_drawer != 0){
         drawer::SurfaceDrawer *drawer = (drawer::SurfaceDrawer *)p_drawer;
         jbyte *srcData = env->GetByteArrayElements(rgba, NULL);
-        int ret = drawer->RGBADrawSurface(srcData, width, height);
+        int ret = drawer->DrawSurface(srcData, width, height);
         env->ReleaseByteArrayElements(rgba, srcData, 0);
         return ret;
     }
@@ -487,7 +480,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *_vm, void *) {
 
             {"createDrawer",    "(Landroid/view/Surface;)J",     (void *) jni_create_drawer},
             {"releaseDrawer",   "(J)V",                          (void *) jni_release_drawer},
-            {"rgbaDraw",        "(J[BII)I",                      (void *) jni_drawer_rgba_draw_surface},
+            {"doDrawer",        "(J[BII)I",                      (void *) jni_drawer_draw_surface},
     };
 
     if (env->RegisterNatives(nativeEngineClass, methods, 15) < 0) {

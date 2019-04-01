@@ -9,7 +9,7 @@ class YuvJni {
         try {
             System.loadLibrary("yuv");
             sInit = true;
-        }catch (Throwable e){
+        } catch (Throwable e) {
             e.printStackTrace();
             sInit = false;
         }
@@ -47,23 +47,24 @@ class YuvJni {
     /**
      * YUV数据的镜像
      *
-     * @param src        原始数据
-     * @param width      原始的宽
-     * @param height     原始的高
-     * @param dst        输出数据
+     * @param src    原始数据
+     * @param width  原始的宽
+     * @param height 原始的高
+     * @param dst    输出数据
      **/
     static native int i420Mirror(byte[] src, int width, int height, byte[] dst);
 
     /**
      * YUV数据的旋转
      *
-     * @param src        原始数据
-     * @param width      原始的宽
-     * @param height     原始的高
-     * @param dst        输出数据
-     * @param degree     旋转的角度，90，180和270三种
+     * @param src    原始数据
+     * @param width  原始的宽
+     * @param height 原始的高
+     * @param dst    输出数据
+     * @param degree 旋转的角度，90，180和270三种
      **/
     static native int i420Rotate(byte[] src, int width, int height, byte[] dst, int degree);
+
     /**
      * i420数据的缩放
      *
@@ -118,7 +119,7 @@ class YuvJni {
 
     static native long createDrawer(Surface surface);
 
-    static native int rgbaDraw(long drawer, byte[] rgba, int width, int height);
+    static native int doDrawer(long drawer, byte[] rgba, int width, int height);
 
     static native void releaseDrawer(long drawer);
 }
