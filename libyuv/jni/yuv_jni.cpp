@@ -369,15 +369,15 @@ int i420_draw_surface(JNIEnv *env, jobject surface, jbyte *i420Data, int width, 
                int width,
                int height)
      */
-    uint8_t *dst_y = (uint8_t *) i420Data;
+
     int dst_y_stride = width;
     int dst_u_stride = width >> 1;
     int dst_v_stride = dst_u_stride;
     size_t ySize = static_cast<size_t>(width * height);
     size_t uSize = static_cast<size_t>(dst_u_stride * (height >> 1));
 
+    uint8_t *dst_y = (uint8_t *) i420Data;
     uint8_t *dst_u = (uint8_t *) i420Data + ySize;
-
     uint8_t *dst_v = (uint8_t *) i420Data + ySize + uSize;
 
     //rgba

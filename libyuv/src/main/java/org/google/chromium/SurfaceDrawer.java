@@ -3,6 +3,10 @@ package org.google.chromium;
 import android.graphics.Bitmap;
 import android.view.Surface;
 
+/**
+ * 封装了也没快多少
+ * @deprecated
+ */
 public class SurfaceDrawer {
     private Surface mSurface;
     private long nativePtr;

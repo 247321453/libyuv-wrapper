@@ -31,11 +31,12 @@ int SurfaceDrawer::DrawSurface(jbyte *rgba, int width, int height) {
         ANativeWindow_setBuffersGeometry(nativeWindow, width, height, WINDOW_FORMAT_RGBA_8888);
     }
 
-    ANativeWindow_lock(nativeWindow, &windowBuffer, 0);
-    uint8_t *dst = (uint8_t *) windowBuffer.bits;
-    uint8_t *src = (uint8_t *) rgba;
-    size_t len = static_cast<size_t>(4 * width * height);
-    memcpy(dst, src, len);
-    ANativeWindow_unlockAndPost(nativeWindow);
+    if(ANativeWindow_lock(nativeWindow, &windowBuffer, NULL)==0) {
+        uint8_t *dst = (uint8_t *) windowBuffer.bits;
+        uint8_t *src = (uint8_t *) rgba;
+        size_t len = static_cast<size_t>(4 * width * height);
+        memcpy(dst, src, len);
+        ANativeWindow_unlockAndPost(nativeWindow);
+    }
     return 0;
 }
