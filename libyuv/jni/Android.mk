@@ -55,10 +55,10 @@ LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/libyuv/include
 LOCAL_C_INCLUDES += $(LOCAL_PATH)/libyuv/include
 LOCAL_EXPORT_C_INCLUDE_DIRS := $(LOCAL_PATH)/libyuv/include
 
-LOCAL_MODULE := libyuv_static
+LOCAL_MODULE := libyuv
 LOCAL_MODULE_TAGS := optional
 
-include $(BUILD_STATIC_LIBRARY)
+include $(BUILD_SHARED_LIBRARY)
 
 ############
 include $(CLEAR_VARS)
@@ -73,7 +73,7 @@ LOCAL_SRC_FILES  := \
 
 #LOCAL_CFLAGS += -DDISABLE_LOG=1
 
-LOCAL_STATIC_LIBRARIES := libyuv_static
+LOCAL_SHARED_LIBRARIES := libyuv
 
 LOCAL_LDLIBS := -llog -landroid
 
