@@ -47,21 +47,6 @@ public class YuvI420 extends Yuv {
         return BitmapFactory.decodeByteArray(bitData, 0, bitData.length);
     }
 
-    public boolean crop(int left, int top, int width, int height) {
-        if (width == this.width && height == this.height) {
-            return true;
-        }
-        byte[] dst = newYuvBytes(width, height);
-        int ret = YuvJni.i420Crop(this.data, this.width, this.height, dst, left, top, width, height);
-        if (ret == 0) {
-            this.data = dst;
-            this.width = width;
-            this.height = height;
-            return true;
-        }
-        return false;
-    }
-
     /**
      * @param width
      * @param height
@@ -81,6 +66,39 @@ public class YuvI420 extends Yuv {
         return false;
     }
 
+
+    public boolean rotateWithCrop(int degree, int left, int top, int width, int height) {
+        if (width == this.width && height == this.height) {
+            return true;
+        }
+        byte[] dst = newYuvBytes(width, height);
+        int ret = YuvJni.i420RotateWithCrop(this.data, this.width, this.height, degree,
+                dst, left, top, width, height);
+        if (ret == 0) {
+            this.data = dst;
+            this.width = width;
+            this.height = height;
+            return true;
+        }
+        return false;
+    }
+
+
+    public boolean crop(int left, int top, int width, int height) {
+        if (width == this.width && height == this.height) {
+            return true;
+        }
+        byte[] dst = newYuvBytes(width, height);
+        int ret = YuvJni.i420RotateWithCrop(this.data, this.width, this.height, 0, dst, left, top, width, height);
+        if (ret == 0) {
+            this.data = dst;
+            this.width = width;
+            this.height = height;
+            return true;
+        }
+        return false;
+    }
+
     /**
      * @param degree 90,180,270
      */
@@ -93,7 +111,7 @@ public class YuvI420 extends Yuv {
         }
         Log.d(TAG, "rotate:" + degree);
         byte[] dst = newYuvBytes(width, height);
-        int ret = YuvJni.i420Rotate(this.data, this.width, this.height, dst, degree);
+        int ret = YuvJni.i420RotateWithCrop(this.data, this.width, this.height, degree, dst, 0, 0, this.width, this.height);
         if (ret == 0) {
             this.data = dst;
             if (degree == 90 || degree == 270) {

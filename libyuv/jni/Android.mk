@@ -65,11 +65,11 @@ include $(CLEAR_VARS)
 
 LOCAL_C_INCLUDES += $(LOCAL_PATH)/libyuv/include
 
-LOCAL_MODULE := libyuv
+LOCAL_MODULE := libyuv-util
 
 LOCAL_SRC_FILES  := \
     yuv_jni.cpp \
-    surface_draw.cpp
+    yuv_util.cpp
 
 #LOCAL_CFLAGS += -DDISABLE_LOG=1
 
