@@ -67,7 +67,7 @@ LOCAL_C_INCLUDES += $(LOCAL_PATH)/libyuv/include
 
 LOCAL_MODULE := libyuv-util
 
-LOCAL_SRC_FILES  := \
+LOCAL_SRC_FILES  := main.cpp \
     yuv_jni.cpp \
     yuv_util.cpp
 
