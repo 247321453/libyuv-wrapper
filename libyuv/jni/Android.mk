@@ -55,10 +55,10 @@ LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/libyuv/include
 LOCAL_C_INCLUDES += $(LOCAL_PATH)/libyuv/include
 LOCAL_EXPORT_C_INCLUDE_DIRS := $(LOCAL_PATH)/libyuv/include
 
-LOCAL_MODULE := libyuv
+LOCAL_MODULE := libyuv_static
 LOCAL_MODULE_TAGS := optional
 
-include $(BUILD_SHARED_LIBRARY)
+include $(BUILD_STATIC_LIBRARY)
 
 ############
 include $(CLEAR_VARS)
@@ -69,11 +69,12 @@ LOCAL_MODULE := libyuv-util
 
 LOCAL_SRC_FILES  := main.cpp \
     yuv_jni.cpp \
-    yuv_util.cpp
+    yuv_util.cpp \
+    yuv_draw.cpp
 
 #LOCAL_CFLAGS += -DDISABLE_LOG=1
 
-LOCAL_SHARED_LIBRARIES := libyuv
+LOCAL_STATIC_LIBRARIES := libyuv_static
 
 LOCAL_LDLIBS := -llog -landroid
 

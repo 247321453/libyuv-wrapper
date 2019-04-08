@@ -3,6 +3,7 @@
 //
 #include <jni.h>
 #include "yuv_jni.h"
+#include "yuv_draw.h"
 #define JNI_CLASS_NAME "org/google/chromium/YuvJni"
 
 
