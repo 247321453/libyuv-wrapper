@@ -174,3 +174,14 @@ int argb_to_i420(uint8_t *src, int width, int height, uint8_t *dst) {
                                  width, height);
     return ret;
 }
+int rgba_to_i420(uint8_t *src, int width, int height, uint8_t *dst) {
+    int y_size = width * height;
+    int u_size = (width >> 1) * (height >> 1);
+    int half_width = width >> 1;
+    int ret = libyuv::ABGRToI420(src, width * 4,
+                                 dst, width,
+                                 dst + y_size, half_width,
+                                 dst + y_size + u_size, half_width,
+                                 width, height);
+    return ret;
+}

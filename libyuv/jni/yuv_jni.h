@@ -19,6 +19,12 @@ jint jni_argb_to_i420(JNIEnv *env, jclass, jbyteArray rgba, jint width, jint hei
 jint jni_argb_to_nv21(JNIEnv *env, jclass, jbyteArray rgba, jint width, jint height,
                       jbyteArray yuv);
 
+jint jni_rgba_to_i420(JNIEnv *env, jclass, jbyteArray rgba, jint width, jint height,
+                      jbyteArray yuv);
+
+jint jni_rgba_to_nv21(JNIEnv *env, jclass, jbyteArray rgba, jint width, jint height,
+                      jbyteArray yuv);
+
 jint jni_i420_mirror(JNIEnv *env, jclass, jbyteArray src_arr, jint width, jint height,
                      jbyteArray dst_arr);
 

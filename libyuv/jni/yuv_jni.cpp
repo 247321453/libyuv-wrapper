@@ -33,11 +33,37 @@ jint jni_i420_to_argb(JNIEnv *env, jclass, jbyteArray i420, jint width, jint hei
     return ret;
 }
 
+jint jni_rgba_to_i420(JNIEnv *env, jclass, jbyteArray rgba, jint width, jint height,
+                      jbyteArray yuv){
+    jbyte *rgbaData = env->GetByteArrayElements(rgba, NULL);
+    jbyte *yuvData = env->GetByteArrayElements(yuv, NULL);
+    int ret = argb_to_i420((uint8_t*)rgbaData, width, height, (uint8_t*)yuvData);
+    env->ReleaseByteArrayElements(rgba, rgbaData, 0);
+    env->ReleaseByteArrayElements(yuv, yuvData, 0);
+    return ret;
+}
+
+jint jni_rgba_to_nv21(JNIEnv *env, jclass, jbyteArray rgba, jint width, jint height,
+                      jbyteArray yuv){
+    jbyte *rgbaData = env->GetByteArrayElements(rgba, NULL);
+    jbyte *nv21Data = env->GetByteArrayElements(yuv, NULL);
+
+    jbyte *i420_data = (jbyte *) malloc(sizeof(jbyte) * width * height * 3 / 2);
+    int ret = rgba_to_i420((uint8_t*)rgbaData, width, height, (uint8_t*)i420_data);
+    if(ret == 0){
+        ret = i420_to_nv21((uint8_t*)i420_data, width, height, (uint8_t*)nv21Data);
+    }
+    env->ReleaseByteArrayElements(rgba, rgbaData, 0);
+    env->ReleaseByteArrayElements(yuv, nv21Data, 0);
+    free(i420_data);
+    return ret;
+}
+
 jint jni_argb_to_i420(JNIEnv *env, jclass, jbyteArray rgba, jint width, jint height,
                       jbyteArray yuv) {
     jbyte *rgbaData = env->GetByteArrayElements(rgba, NULL);
     jbyte *yuvData = env->GetByteArrayElements(yuv, NULL);
-    int ret = argb_to_i420((uint8_t*)rgbaData, width, height, (uint8_t*)yuvData);
+    int ret = rgba_to_i420((uint8_t*)rgbaData, width, height, (uint8_t*)yuvData);
     env->ReleaseByteArrayElements(rgba, rgbaData, 0);
     env->ReleaseByteArrayElements(yuv, yuvData, 0);
     return ret;
@@ -86,16 +112,12 @@ jint jni_i420_mirror(JNIEnv *env, jclass, jbyteArray src_arr, jint width, jint h
 
 jint jni_i420_rotate_crop(JNIEnv *env, jclass,
                           jbyteArray src_i420_data,
-                          jint src_width, jint src_height, jint degree,
+                          jint src_width, jint src_height, jint rotation,
                           jbyteArray dst_i420_data,
                           jint crop_x, jint crop_y, jint dst_width, jint dst_height) {
     jbyte *src = env->GetByteArrayElements(src_i420_data, NULL);
     jbyte *dst = env->GetByteArrayElements(dst_i420_data, NULL);
-
-    if (degree > 4) {
-        degree = degree / 90;
-    }
-    int ret = i420_rotate_crop((uint8_t *) src, src_width, src_height, degree,
+    int ret = i420_rotate_crop((uint8_t *) src, src_width, src_height, rotation,
                                crop_x, crop_y, dst_width, dst_height, (uint8_t *) dst);
     env->ReleaseByteArrayElements(src_i420_data, src, 0);
     env->ReleaseByteArrayElements(dst_i420_data, dst, 0);

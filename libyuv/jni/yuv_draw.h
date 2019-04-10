@@ -12,9 +12,6 @@ int rgba_draw_surface(JNIEnv *env, jobject surface, jbyte *rgba, int width, int 
 jint jni_rgba_draw_surface(JNIEnv *env, jclass, jobject surface, jbyteArray rgba, jint width,
                            jint height);
 
-jint jni_rgba_draw_surface(JNIEnv *env, jclass, jobject surface, jbyteArray rgba, jint width,
-                           jint height);
-
 jint jni_i420_draw_surface(JNIEnv *env, jclass, jobject surface, jbyteArray i420, jint width,
                            jint height);
 

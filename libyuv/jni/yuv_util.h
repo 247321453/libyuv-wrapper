@@ -26,4 +26,5 @@ int i420_rotate_crop(uint8_t *src,
                      int src_width, int src_height, int degree,
                      int left, int top, int dst_width, int dst_height, uint8_t *dst);
 int argb_to_i420(uint8_t *src, int width, int height, uint8_t *dst);
+int rgba_to_i420(uint8_t *src, int width, int height, uint8_t *dst);
 #endif //LIBYUV_WRAPPER_YUV_UTIL_H
