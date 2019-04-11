@@ -37,7 +37,7 @@ jint jni_rgba_to_i420(JNIEnv *env, jclass, jbyteArray rgba, jint width, jint hei
                       jbyteArray yuv){
     jbyte *rgbaData = env->GetByteArrayElements(rgba, NULL);
     jbyte *yuvData = env->GetByteArrayElements(yuv, NULL);
-    int ret = argb_to_i420((uint8_t*)rgbaData, width, height, (uint8_t*)yuvData);
+    int ret = rgba_to_i420((uint8_t*)rgbaData, width, height, (uint8_t*)yuvData);
     env->ReleaseByteArrayElements(rgba, rgbaData, 0);
     env->ReleaseByteArrayElements(yuv, yuvData, 0);
     return ret;
