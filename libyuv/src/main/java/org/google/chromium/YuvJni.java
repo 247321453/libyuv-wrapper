@@ -84,10 +84,9 @@ class YuvJni {
      * @param src      原始数据
      * @param width    原始的宽
      * @param height   原始的高
-	 * @param rotation 0-3 原始角度
+	 * @param rotation 0-3 旋转再处理
 	 * @param width    目标的宽
      * @param height   目标的高
-	 * @param dst_rotation 0-3 
      * @see Surface#ROTATION_0, Surface#ROTATION_90, Surface#ROTATION_180, Surface#ROTATION_270
      **/
 	static native int i420RotateWithCropEx(byte[] src, int width, int height, int rotation,
