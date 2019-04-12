@@ -78,6 +78,22 @@ class YuvJni {
     static native int i420RotateWithCrop(byte[] src, int width, int height, int rotation,
                                          byte[] dst, int crop_x, int crop_y, int dst_width, int dst_height);
 
+										   /**
+     * YUV数据的旋转，裁剪
+     *
+     * @param src      原始数据
+     * @param width    原始的宽
+     * @param height   原始的高
+	 * @param rotation 0-3 原始角度
+	 * @param width    目标的宽
+     * @param height   目标的高
+	 * @param dst_rotation 0-3 
+     * @see Surface#ROTATION_0, Surface#ROTATION_90, Surface#ROTATION_180, Surface#ROTATION_270
+     **/
+	static native int i420RotateWithCropEx(byte[] src, int width, int height, int rotation,
+										 byte[] dst, int dst_width, int dst_height, boolean stretch);
+
+												  
     /**
      * 将NV21转化为I420
      *
@@ -100,5 +116,7 @@ class YuvJni {
      * @param mode       压缩模式。这里为0，1，2，3 速度由快到慢，质量由低到高，一般用0就好了，因为0的速度最快
      **/
     static native int i420Scale(byte[] src, int width, int height, byte[] dst, int dst_width, int dst_height, int mode);
+	
+	
 
 }

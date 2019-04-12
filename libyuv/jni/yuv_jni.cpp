@@ -5,6 +5,7 @@
 #include "debug.h"
 #include "yuv_jni.h"
 #include "yuv_util.h"
+#include "size_info.h"
 
 jint jni_nv21_to_argb(JNIEnv *env, jclass, jbyteArray nv21, jint width, jint height,
                       jbyteArray rgba) {
@@ -145,6 +146,45 @@ jint jni_i420_scale(JNIEnv *env, jclass, jbyteArray src_i420_data, jint width, j
     int ret = i420_scale((uint8_t *) src, width, height, (uint8_t *) dst, dst_width, dst_height,
                          mode % 4);
 
+    env->ReleaseByteArrayElements(src_i420_data, src, 0);
+    env->ReleaseByteArrayElements(dst_i420_data, dst, 0);
+    return ret;
+}
+
+jint jni_i420_rotate_crop_ex(JNIEnv *env, jclass,
+                             jbyteArray src_i420_data,
+                             jint src_width, jint src_height, jint rotation,
+                             jbyteArray dst_i420_data,
+                             jint dst_width, jint dst_height,
+                             jboolean stretch, jint mode) {
+    jbyte *src = env->GetByteArrayElements(src_i420_data, NULL);
+    jbyte *dst = env->GetByteArrayElements(dst_i420_data, NULL);
+    SizeInfo info;
+    info.src_width = src_width;
+    info.src_height = src_height;
+    info.src_rotation = 0;
+    InitSizeInfo(&info, dst_width, dst_height, rotation, stretch);
+
+    int ret;
+    int crop_x = info.crop_x, crop_y = info.crop_y, crop_w = info.crop_width, crop_h = info.crop_height;
+    if (info.need_scale) {
+        uint8_t *r_data = new uint8_t[crop_w * crop_h * 3 / 2];
+        ret = i420_rotate_crop((uint8_t *) src, src_width, src_height, info.display_rotation,
+                               crop_x, crop_y, crop_w, crop_h, r_data);
+        if (ret == 0) {
+            if (info.display_rotation == ROTATION_90 || info.display_rotation == ROTATION_270) {
+                ret = i420_scale(r_data, crop_h, crop_w, (uint8_t *) dst, info.display_width,
+                                 info.display_height, 3);
+            } else {
+                ret = i420_scale(r_data, crop_x, crop_h, (uint8_t *) dst, info.display_width,
+                                 info.display_height, 3);
+            }
+        }
+        free(r_data);
+    } else {
+        ret = i420_rotate_crop((uint8_t *) src, src_width, src_height, info.display_rotation,
+                               crop_x, crop_y, crop_w, crop_h, (uint8_t *) dst);
+    }
     env->ReleaseByteArrayElements(src_i420_data, src, 0);
     env->ReleaseByteArrayElements(dst_i420_data, dst, 0);
     return ret;

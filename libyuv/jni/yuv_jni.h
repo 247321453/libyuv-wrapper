@@ -44,4 +44,10 @@ jint jni_i420_scale(JNIEnv *env, jclass, jbyteArray src_i420_data, jint width, j
 jint jni_i420_to_nv21(JNIEnv *env, jclass, jbyteArray i420_data, jint width, jint height,
                       jbyteArray nv21_data);
 
+jint jni_i420_rotate_crop_ex(JNIEnv *env, jclass,
+                             jbyteArray src_i420_data,
+                             jint src_width, jint src_height, jint rotation,
+                             jbyteArray dst_i420_data,
+                             jint dst_width, jint dst_height,
+                             jboolean stretch, jint mode);
 #endif //LIBYUV_WRAPPER_YUV_JNI_H

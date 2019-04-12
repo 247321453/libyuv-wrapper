@@ -70,6 +70,7 @@ LOCAL_MODULE := libyuv-util
 LOCAL_SRC_FILES  := main.cpp \
     yuv_jni.cpp \
     yuv_util.cpp \
+	size_info.cpp \
     yuv_draw.cpp
 
 #LOCAL_CFLAGS += -DDISABLE_LOG=1
