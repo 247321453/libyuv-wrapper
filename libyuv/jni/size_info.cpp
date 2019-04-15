@@ -33,7 +33,7 @@ void ResetSizeInfo(SizeInfo *info) {
 }
 
 void
-InitSizeInfo(SizeInfo *size, int dst_width, int dst_height, int dst_rotation, bool stretch) {
+InitSizeInfo(SizeInfo *size, int dst_width, int dst_height, int dst_rotation, bool stretch, int mode) {
     if (size->src_height == 0 || size->src_width == 0) {
         ALOGW("need set crop_width and src_height.");
         return;
@@ -89,25 +89,41 @@ InitSizeInfo(SizeInfo *size, int dst_width, int dst_height, int dst_rotation, bo
                 } else {
                     //目标的宽和原始比例的宽一样
                     int w1 = src_width;//540/360*640=960
-                    int h1 = (int) round(
-                            (float) w1 / (float) dst_width * (float) dst_height);
+                    int h1 = (int) round((float) w1 / (float) dst_width * (float) dst_height);
                     //目标的高和原始比例的高一样
                     int h2 = src_height;//960/640*360=540
-                    int w2 = (int) round(h2 / (float) dst_height * (float) dst_width);
+                    int w2 = (int) round((float) h2 / (float) dst_height * (float) dst_width);
 
                     if (h1 < src_height) {
                         //裁剪的高度小于原始高度，进行裁剪
                         size->crop_x = 0;
-                        size->crop_y =
-                                (src_height - h1) / 4 * 2;//不能单数 26/2=13  26/4*2=12
+                        if ((mode & CROP_MODE_TOP) != 0) {
+                            //保留顶部
+                            size->crop_y = 0;
+                        } else if ((mode & CROP_MODE_BOTTOM) != 0) {
+                            //保留底部
+                            size->crop_y = (src_height - h1) * 2 / 2;
+                        } else {
+                            //保留中间
+                            size->crop_y = (src_height - h1) / 4 * 2;//不能单数 26/2=13  26/4*2=12
+                        }
                         size->crop_width = w1;
-                        size->crop_height = src_height - size->crop_y * 2;
+                        size->crop_height = h1;
                     } else if (w2 < src_width) {
                         //裁剪的宽度小于原始宽度，进行裁剪
                         //宽度比目标宽
-                        size->crop_x = (src_width - w2) / 4 * 2;
+                        if ((mode & CROP_MODE_LEFT) != 0) {
+                            //保留顶部
+                            size->crop_x = 0;
+                        } else if ((mode & CROP_MODE_RIGHT) != 0) {
+                            //保留底部
+                            size->crop_x = (src_width - w2) * 2 / 2;
+                        } else {
+                            //保留中间
+                            size->crop_x = (src_width - w2) / 4 * 2;
+                        }
                         size->crop_y = 0;
-                        size->crop_width = src_width - size->crop_x * 2;
+                        size->crop_width = w2;
                         size->crop_height = h2;
                     } else {
                         //

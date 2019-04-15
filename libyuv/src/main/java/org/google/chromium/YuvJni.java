@@ -1,5 +1,6 @@
 package org.google.chromium;
 
+import android.view.Gravity;
 import android.view.Surface;
 
 class YuvJni {
@@ -78,21 +79,35 @@ class YuvJni {
     static native int i420RotateWithCrop(byte[] src, int width, int height, int rotation,
                                          byte[] dst, int crop_x, int crop_y, int dst_width, int dst_height);
 
-										   /**
+
+    /**
+     * 可以用|组合
+     */
+    public static final int CROP_MODE_TOP = 1;
+    public static final int CROP_MODE_BOTTOM = 2;
+    public static final int CROP_MODE_LEFT = 4;
+    public static final int CROP_MODE_RIGHT = 8;
+    public static final int CROP_MODE_CENTER_HORIZONTAL = 10;
+    public static final int CROP_MODE_CENTER_VERTICAL = 20;
+
+    public static final int CROP_MODE_CENTER = CROP_MODE_CENTER_HORIZONTAL|CROP_MODE_CENTER_VERTICAL;
+
+    /**
      * YUV数据的旋转，裁剪
      *
      * @param src      原始数据
      * @param width    原始的宽
      * @param height   原始的高
-	 * @param rotation 0-3 旋转再处理
-	 * @param width    目标的宽
+     * @param rotation 0-3 旋转再处理
+     * @param width    目标的宽
      * @param height   目标的高
+     * @param mode     默认居中裁剪#CROP_MODE_CENTER
+     * @see #CROP_MODE_CENTER
      * @see Surface#ROTATION_0, Surface#ROTATION_90, Surface#ROTATION_180, Surface#ROTATION_270
      **/
-	static native int i420RotateWithCropEx(byte[] src, int width, int height, int rotation,
-										 byte[] dst, int dst_width, int dst_height, boolean stretch);
+    static native int i420RotateWithCropEx(byte[] src, int width, int height, int rotation,
+                                           byte[] dst, int dst_width, int dst_height, boolean stretch, int mode);
 
-												  
     /**
      * 将NV21转化为I420
      *
@@ -115,7 +130,6 @@ class YuvJni {
      * @param mode       压缩模式。这里为0，1，2，3 速度由快到慢，质量由低到高，一般用0就好了，因为0的速度最快
      **/
     static native int i420Scale(byte[] src, int width, int height, byte[] dst, int dst_width, int dst_height, int mode);
-	
-	
+
 
 }

@@ -9,6 +9,13 @@
 #define ROTATION_180 2
 #define ROTATION_270 3
 
+#define CROP_MODE_TOP 1
+#define CROP_MODE_BOTTOM 2
+#define CROP_MODE_LEFT 4
+#define CROP_MODE_RIGHT 8
+#define CROP_MODE_CENTER_HORIZONTAL 10
+#define CROP_MODE_CENTER_VERTICAL 20
+
 struct SizeInfo {
     //原始尺寸
     int src_width;
@@ -39,6 +46,6 @@ struct SizeInfo {
 
 void ResetSizeInfo(SizeInfo *info);
 
-void InitSizeInfo(SizeInfo *size, int dst_width, int dst_height, int dst_rotation, bool stretch);
+void InitSizeInfo(SizeInfo *size, int dst_width, int dst_height, int dst_rotation, bool stretch, int mode);
 
 #endif //AGGREGATE_SIZE_UTIL_H

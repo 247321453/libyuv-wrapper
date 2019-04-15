@@ -40,7 +40,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *_vm, void *) {
             {"nv21ToI420",         "([BII[B)I",                     (void *) jni_nv21_to_i420},
             {"i420Scale",          "([BII[BIII)I",                  (void *) jni_i420_scale},
 
-            {"i420RotateWithCropEx", "([BIII[BIIIZI)I",                (void *) jni_i420_rotate_crop_ex},
+            {"i420RotateWithCropEx", "([BIII[BIIZI)I",                (void *) jni_i420_rotate_crop_ex},
     };
 
     if (env->RegisterNatives(nativeEngineClass, methods, 13) < 0) {

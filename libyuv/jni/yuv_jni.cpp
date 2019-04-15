@@ -163,7 +163,7 @@ jint jni_i420_rotate_crop_ex(JNIEnv *env, jclass,
     info.src_width = src_width;
     info.src_height = src_height;
     info.src_rotation = 0;
-    InitSizeInfo(&info, dst_width, dst_height, rotation, stretch);
+    InitSizeInfo(&info, dst_width, dst_height, rotation, stretch, mode);
 
     int ret;
     int crop_x = info.crop_x, crop_y = info.crop_y, crop_w = info.crop_width, crop_h = info.crop_height;
