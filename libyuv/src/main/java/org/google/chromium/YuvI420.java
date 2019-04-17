@@ -111,7 +111,7 @@ public class YuvI420 extends Yuv {
         }
         Log.d(TAG, "rotate:" + degree);
         byte[] dst = newYuvBytes(width, height);
-        int ret = YuvJni.i420RotateWithCrop(this.data, this.width, this.height, degree, dst, 0, 0, this.width, this.height);
+        int ret = YuvJni.i420RotateWithCrop(this.data, this.width, this.height, degree / 90, dst, 0, 0, this.width, this.height);
         if (ret == 0) {
             this.data = dst;
             if (degree == 90 || degree == 270) {
