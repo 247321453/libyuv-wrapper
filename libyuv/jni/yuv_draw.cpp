@@ -18,7 +18,12 @@ int rgba_draw_surface(JNIEnv *env, jobject surface, jbyte *rgba, int width, int 
     ANativeWindow_Buffer windowBuffer;
     if (ANativeWindow_lock(nativeWindow, &windowBuffer, 0) == 0) {
         uint8_t *dst = (uint8_t *) windowBuffer.bits;
-        int dstStride = windowBuffer.stride * 4;
+        int dstStride;
+        if (windowBuffer.format == WINDOW_FORMAT_RGBA_8888) {
+            dstStride = windowBuffer.stride * 4;
+        } else {
+            dstStride = windowBuffer.stride * 2;
+        }
         uint8_t *src = (uint8_t *) rgba;
         size_t src_stride = (size_t) width * 4;
         for (int h = 0; h < height; h++) {

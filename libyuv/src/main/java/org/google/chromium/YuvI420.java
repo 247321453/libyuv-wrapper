@@ -50,7 +50,7 @@ public class YuvI420 extends Yuv {
     /**
      * @param width
      * @param height
-     * @param mode   0-5
+     * @param mode   0-3
      */
     public boolean scale(int width, int height, int mode) {
         byte[] dst = newYuvBytes(width, height);
