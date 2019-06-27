@@ -1,9 +1,9 @@
 # libyuv-wrapper
 
- YUV的I420的压缩，缩放，裁剪，缩放
- i420和nv21，rgba之间转换的工具库  
- nv21，一般android的相机数据格式  
- rgba，android的jni绘制数据格式  
+  YUV的I420的压缩，缩放，裁剪，缩放</br>
+  i420和nv21,rgba之间转换的工具库</br>
+  nv21:一般android的相机数据格式</br>
+  rgba:android的jni绘制数据格式</br>
 
 ** YUV格式 **
 
